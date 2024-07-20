@@ -1,5 +1,6 @@
 package com.springdata.SpringDataJPA.Rest;
 
+import com.springdata.SpringDataJPA.ExceptionHandling.StudentNotFoundException;
 import com.springdata.SpringDataJPA.Pojos.Student;
 import com.springdata.SpringDataJPA.Services.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,16 +33,20 @@ public class StudentRest {
     }
 
     @GetMapping("/students/{studentId}")
-    public Student findById(@PathVariable int studentId){
+    public Student findById(@PathVariable int studentId) throws StudentNotFoundException {
         Student student=studentService.findById(studentId);
         if (student==null){
-            throw new RuntimeException("Not Found Student with Id: "+studentId);
+            throw new StudentNotFoundException("Not Found Student with Id: "+studentId);
         }
         return student;
     }
 
     @DeleteMapping("/students/{studentId}")
-    public  void deleteStudent(@PathVariable int studentId){
+    public  void deleteStudent(@PathVariable int studentId) throws StudentNotFoundException {
+        Student student=studentService.findById(studentId);
+        if(student==null){
+            throw new StudentNotFoundException("Not Found Student with Id: "+studentId);
+        }
         studentService.deleteById(studentId);
     }
 }
